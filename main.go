@@ -5,8 +5,6 @@ package main
 import (
 	barista "barista.run"
 	"barista.run/bar"
-	_ "barista.run/modules/weather"
-	_ "barista.run/modules/weather/openweathermap"
 	"github.com/D7682/gobar/mods"
 	"github.com/D7682/gobar/setDefault"
 	"log"
