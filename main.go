@@ -41,7 +41,6 @@ import (
 )
 
 var (
-	startTaskManager  = click.RunLeft("urxvt", "-e", "htop")
 	spacer            = pango.Text(" ").XXSmall()
 	gsuiteOauthConfig = []byte(`{"installed": {
 	"client_id":"%%GOOGLE_CLIENT_ID%%",
@@ -110,7 +109,7 @@ func GetVolume() (bar.Module, error) {
 	volumeModule := volume.New(alsa.DefaultMixer()).Output(func(v volume.Volume) bar.Output {
 		var iconName string
 		if v.Mute {
-			return outputs.Pango(pango.Icon("fas fa-volume-mute"), spacer, "MUT").Color(colors.Scheme("degraded"))
+			return outputs.Pango(pango.Icon("fa-volume-mute"), spacer, "MUT").Color(colors.Scheme("degraded"))
 		}
 		iconName = "off"
 		pct := v.Pct()
@@ -121,7 +120,7 @@ func GetVolume() (bar.Module, error) {
 		}
 
 		return outputs.Pango(
-			pango.Icon("fas fa-volume-"+iconName),
+			pango.Icon("fa-volume-"+iconName),
 			spacer,
 			pango.Textf("%2d%%", pct),
 		)
@@ -139,6 +138,7 @@ func GetDiskSpace() (bar.Module, error) {
 
 // GetMem gets the amount of free ram left on the hard drive.
 func GetMem() (bar.Module, error) {
+	startTaskManager := click.RunLeft("urxvt", "-e", "htop")
 	freeMemModule := meminfo.New().Output(func(m meminfo.Info) bar.Output {
 		out := outputs.Pango(pango.Icon("material-memory"), format.IBytesize(m.Available()))
 		freeGigs := m.Available().Gigabytes()
@@ -160,6 +160,7 @@ func GetMem() (bar.Module, error) {
 
 // GetLoad is used to get the average cpu load.
 func GetLoad() (bar.Module, error) {
+	startTaskManager := click.RunLeft("urxvt", "-e", "htop")
 	loadAvg := sysinfo.New().Output(func(s sysinfo.Info) bar.Output {
 		out := outputs.Textf("%0.2f %0.2f", s.Loads[0], s.Loads[2])
 		// Load averages are unusually high for a few minutes after boot.
@@ -181,6 +182,7 @@ func GetLoad() (bar.Module, error) {
 	return loadAvg, nil
 }
 func GetWeather() (bar.Module, error) {
+	var openWeatherInBrowser = click.RunLeft(os.Getenv("BROWSER"), fmt.Sprintf("https://openweathermap.org/city/%s", viper.GetString("openweather.cityid")))
 	weatherModule := weather.New(openweathermap.New(viper.GetString("openweather.key")).CityID(viper.GetString("openweather.cityid"))).Output(func(w weather.Weather) bar.Output {
 		var iconName string
 		switch w.Condition {
@@ -222,7 +224,7 @@ func GetWeather() (bar.Module, error) {
 			pango.Icon("typecn-"+iconName), spacer,
 			pango.Textf("%.1f°F", w.Temperature.Fahrenheit()),
 			pango.Textf(" (provided by %s)", w.Attribution).XSmall(),
-		)
+		).OnClick(openWeatherInBrowser)
 	})
 
 	return weatherModule, nil
