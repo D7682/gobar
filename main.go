@@ -29,8 +29,11 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"github.com/gen2brain/beeep"
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/martinlindhe/unit"
+	"github.com/martinohmann/barista-contrib/modules/updates"
+	"github.com/martinohmann/barista-contrib/modules/updates/pacman"
 	"github.com/spf13/viper"
 	"github.com/zalando/go-keyring"
 	"log"
@@ -181,6 +184,7 @@ func GetLoad() (bar.Module, error) {
 	})
 	return loadAvg, nil
 }
+
 func GetWeather() (bar.Module, error) {
 	var openWeatherInBrowser = click.RunLeft(os.Getenv("BROWSER"), fmt.Sprintf("https://openweathermap.org/city/%s", viper.GetString("openweather.cityid")))
 	weatherModule := weather.New(openweathermap.New(viper.GetString("openweather.key")).CityID(viper.GetString("openweather.cityid"))).Output(func(w weather.Weather) bar.Output {
@@ -288,10 +292,34 @@ func setupOauthEncryption() error {
 			return err
 		}
 		secret = base64.RawURLEncoding.EncodeToString(secretBytes)
-		keyring.Set(service, username, secret)
+		if err = keyring.Set(service, username, secret); err != nil {
+			log.Fatal(err)
+		}
 	}
 	oauth.SetEncryptionKey(secretBytes)
 	return nil
+}
+
+
+func CheckUpdates() (bar.Module, error) {
+	updatesModule := updates.New(pacman.Provider).Output(func(info updates.Info) bar.Output {
+		text := outputs.Textf("%d updates", info.Updates).OnClick(click.Left(func() {
+			if err := beeep.Notify("Available Pacman Updates", info.PackageDetails.String(), ""); err != nil {
+				log.Fatal(err)
+			}
+		}))
+
+		switch count := info.Updates; {
+		case count == 0:
+			return nil
+		case count > 125:
+			return text.Color(colors.Scheme("bad"))
+		default:
+			return text.Color(colors.Scheme("good"))
+		}
+	})
+
+	return updatesModule, nil
 }
 
 func main() {
@@ -303,6 +331,7 @@ func main() {
 		GetMem,
 		GetDiskSpace,
 		GetCpuTemp,
+		CheckUpdates,
 	}
 
 	for _, module := range modules {
