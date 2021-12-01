@@ -1,6 +1,6 @@
 Go Bar is just a bar I programmed for my Linux Desktop, because I kept getting a lot of bars that didn't have what I wanted.
 
-<img src="./bar.png" alt="Go Bar" width="2560" height="26" />
+![](./bar.png =800x30)
 
 --------
 Add the Fonts to the folder at: $HOME/.config/i3/Github
