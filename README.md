@@ -44,3 +44,13 @@ add the following:
 In order for it to run in i3 you just have to make sure the gobar folder is in $HOME/.config/i3/
 and add:
 status_command exec $HOME/.config/i3/gobar/gobar
+
+# Make sure to install the following for full functionality
+```
+sudo pacman -S gsimplecal
+sudo pacman -S pacman-contrib
+sudo pacman -S htop
+aur.archlinux.org/packages/perl-checkupdates-aur
+aur.archlinux.org/packages/checkupdates-aur
+```
+
