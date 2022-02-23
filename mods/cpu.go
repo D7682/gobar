@@ -1,6 +1,7 @@
 package mods
 
 import (
+	barista "barista.run"
 	"barista.run/bar"
 	"barista.run/colors"
 	"barista.run/modules/cputemp"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-func CpuTemp() (bar.Module, error) {
+func CpuTemp() {
 	cpuModule := cputemp.New().RefreshInterval(2 * time.Second).Output(func(temp unit.Temperature) bar.Output {
 		out := outputs.Pango(
 			pango.Icon("mdi-fan"), spacer,
@@ -26,5 +27,6 @@ func CpuTemp() (bar.Module, error) {
 		}
 		return out
 	})
-	return cpuModule, nil
+
+	barista.Add(cpuModule)
 }

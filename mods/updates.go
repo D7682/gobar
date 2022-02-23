@@ -1,6 +1,7 @@
 package mods
 
 import (
+	barista "barista.run"
 	"barista.run/bar"
 	"barista.run/base/click"
 	"barista.run/colors"
@@ -9,9 +10,10 @@ import (
 	"github.com/martinohmann/barista-contrib/modules/updates"
 	"github.com/martinohmann/barista-contrib/modules/updates/pacman"
 	"log"
+	"time"
 )
 
-func UpdateCheck() (bar.Module, error) {
+func UpdateCheck() {
 	updatesModule := updates.New(pacman.Provider).Output(func(info updates.Info) bar.Output {
 		text := outputs.Textf("%d updates", info.Updates).OnClick(click.Left(func() {
 			if err := beeep.Notify("Available Pacman Updates", info.PackageDetails.String(), ""); err != nil {
@@ -29,5 +31,7 @@ func UpdateCheck() (bar.Module, error) {
 		}
 	})
 
-	return updatesModule, nil
+	updatesModule = updatesModule.Every(time.Second * 30)
+
+	barista.Add(updatesModule)
 }

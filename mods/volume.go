@@ -1,6 +1,7 @@
 package mods
 
 import (
+	barista "barista.run"
 	"barista.run/bar"
 	"barista.run/colors"
 	"barista.run/modules/volume"
@@ -10,7 +11,7 @@ import (
 )
 
 // Volume just takes care of reading volume data.
-func Volume() (bar.Module, error) {
+func Volume() {
 	volumeModule := volume.New(alsa.DefaultMixer()).Output(func(v volume.Volume) bar.Output {
 		var iconName string
 		if v.Mute {
@@ -31,5 +32,5 @@ func Volume() (bar.Module, error) {
 		)
 	})
 
-	return volumeModule, nil
+	barista.Add(volumeModule)
 }

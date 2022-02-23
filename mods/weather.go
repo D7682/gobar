@@ -1,6 +1,7 @@
 package mods
 
 import (
+	barista "barista.run"
 	"barista.run/bar"
 	"barista.run/base/click"
 	"barista.run/modules/weather"
@@ -13,7 +14,7 @@ import (
 	"time"
 )
 
-func GetWeather() (bar.Module, error) {
+func GetWeather() {
 	var openWeatherInBrowser = click.RunLeft(os.Getenv("BROWSER"), fmt.Sprintf("https://openweathermap.org/city/%s", viper.GetString("openweather.cityid")))
 	weatherModule := weather.New(openweathermap.New(viper.GetString("openweather.key")).CityID(viper.GetString("openweather.cityid"))).Output(func(w weather.Weather) bar.Output {
 		var iconName string
@@ -59,6 +60,5 @@ func GetWeather() (bar.Module, error) {
 		).OnClick(openWeatherInBrowser)
 	})
 
-	return weatherModule, nil
-
+	barista.Add(weatherModule)
 }

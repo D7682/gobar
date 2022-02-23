@@ -1,6 +1,7 @@
 package mods
 
 import (
+	barista "barista.run"
 	"barista.run/bar"
 	"barista.run/base/click"
 	"barista.run/colors"
@@ -12,7 +13,7 @@ import (
 
 // GetMem gets the amount of free ram left on the hard drive.
 // Try to get the amount of used ram correctly onto here before recompiling.
-func GetMem() (bar.Module, error) {
+func GetMem() {
 	startTaskManager := click.RunLeft("urxvt", "-e", "htop")
 	usedMemModule := meminfo.New().Output(func(m meminfo.Info) bar.Output {
 		memoryLeft := m.Available().Gigabytes()
@@ -27,5 +28,6 @@ func GetMem() (bar.Module, error) {
 		out.OnClick(startTaskManager)
 		return out
 	})
-	return usedMemModule, nil
+
+	barista.Add(usedMemModule)
 }

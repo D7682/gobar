@@ -1,6 +1,7 @@
 package mods
 
 import (
+	barista "barista.run"
 	"barista.run/bar"
 	"barista.run/base/click"
 	"barista.run/colors"
@@ -10,7 +11,7 @@ import (
 )
 
 // GetLoad is used to get the average cpu load.
-func GetLoad() (bar.Module, error) {
+func GetLoad() {
 	startTaskManager := click.RunLeft("urxvt", "-e", "htop")
 	loadAvg := sysinfo.New().Output(func(s sysinfo.Info) bar.Output {
 		out := outputs.Textf("%0.2f %0.2f", s.Loads[0], s.Loads[2])
@@ -30,5 +31,6 @@ func GetLoad() (bar.Module, error) {
 		out.OnClick(startTaskManager)
 		return out
 	})
-	return loadAvg, nil
+
+	barista.Add(loadAvg)
 }
